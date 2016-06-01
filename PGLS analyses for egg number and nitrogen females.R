@@ -1,17 +1,9 @@
-rm(list=ls())
-setwd("E:\\driveName")  ###Change to whatever drive is appropriate
+rm(list=ls()) ##Removing any remaining objects
 
-###Loading nexus file with phylogeny
-treeb<-read.nexus("butterfly_tree.nex")  ###Reading in phylogeny
+###Change to whatever drive is appropriate for your setup
+setwd("C://Users/elisw/Dropbox/School/Data, analyses/Emilie SR/Butterfly comparative brain project/April 2016/Dryad Test")
 
-data <- read.csv("individual_field_data.csv")  ###Reading in file
-
-data$spec.id <- as.numeric(data$Official.phylogeny.name)
-data$binom <- data$Official.phylogeny.name
-
-treeb<-makeNodeLabel(treeb) 
-data$Wing.Length <- log(data$Wing.Length)
-
+###These packages may need to be installed.
 library(bbmle)
 library(picante)
 library(caper)
@@ -21,8 +13,20 @@ library(geiger)
 library(reshape)
 library(ggplot2)
 
+###Loading nexus file with phylogeny
+###Depending on how you download the data, this might be "butterfly_tree.nex" or "butterfly_tree.txt"
+treeb<-read.nexus("butterfly_tree.txt")
+
+data <- read.csv("individual_field_data.csv")  ###Reading in file
+
+data$spec.id <- as.numeric(data$Species)
+data$binom <- data$Species
+
+treeb<-makeNodeLabel(treeb) 
+data$Wing.Length <- log(data$Wing.length)
+
 ###Setting up and scaling the individual-level data
-model.data <- data.frame("Number.Eggs" = data$X..Mature.eggs.no.zeros, "N.family.level" = data$N.family.level,"spec.id" = data$spec.id, "binom" = data$binom, "Wing.Length" = data$Wing.Length, "Timing" = data$Timing, "Family" = data$Family,"Species" = data$Official.phylogeny.name)
+model.data <- data.frame("Number.Eggs" = data$Number.of.mature.eggs, "N.family.level" = data$N.family.level,"spec.id" = data$spec.id, "binom" = data$binom, "Wing.Length" = data$Wing.length, "Timing" = data$Timing, "Family" = data$Family,"Species" = data$Species)
 model.data <- na.omit(model.data)
 model.data$Number.Eggs <- scale(model.data$Number.Eggs)
 model.data$Wing.Length <- scale(model.data$Wing.Length)
@@ -64,6 +68,4 @@ sum.egg.N.T <- summary(egg.N.T)
 sum.egg.corr.N <- summary(egg.corr.N)
 sum.egg.corr.N.F <- summary(egg.corr.N.F)
 sum.egg.corr.N.T <- summary(egg.corr.N.T)
-
-
 
